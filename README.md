@@ -14,13 +14,13 @@ synology의 경우 파이썬 모듈을 설치하면  easy_install beautifulsoup,
 tv_grab_file 사용시
 tv_grab_file 안의 cat xmltv.xml 또는 wget 부분을
 <pre>
-/파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -d 또는
-/epg2xml.py 경로/epg2xml.py -i KG(SK, LG) -d
+/usr/local/bin/python /home/hts/epg2xml.py -i KT(SK, LG) -d 또는
+/home/hts/epg2xml.py -i KG(SK, LG) -d
 </pre>
 XMLTV 사용시
 <pre>
-/파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock경로 또는
-/epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock 경로
+/usr/local/bin/python /home/hts/epg2xml.py -i KT(SK, LG) -s xmltv.sock경로 또는
+/home/hts/epg2xml.py -i KT(SK, LG) -s xmltv.sock 경로
 </pre>
 
 ## 설정방법
