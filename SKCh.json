@@ -164,7 +164,7 @@
 {"Id":257,"KTCh":255,"SKCh":415,"LGCh":175,"Name":"소상공인방송","Source":"SK","ServiceId":428},
 {"Id":258,"KTCh":31,"SKCh":29,"LGCh":null,"Name":"쇼핑엔T","Source":"SK","ServiceId":336},
 {"Id":260,"KTCh":28,"SKCh":27,"LGCh":null,"Name":"신세계쇼핑","Source":"SK","ServiceId":339},
-{"Id":263,"KTCh":206,"SKCh":417,"LGCh":141,"Name":"아리랑TV","Source":"SKY","ServiceId":50},
+{"Id":263,"KTCh":206,"SKCh":417,"LGCh":141,"Name":"아리랑TV","Source":"SKY","ServiceId"50},
 {"Id":264,"KTCh":186,"SKCh":352,"LGCh":114,"Name":"아시아경제","Source":"SK","ServiceId":622},
 {"Id":265,"KTCh":22,"SKCh":3,"LGCh":20,"Name":"아임쇼핑","Source":"SK","ServiceId":332},
 {"Id":266,"KTCh":138,"SKCh":106,"LGCh":149,"Name":"애니플러스","Source":"SK","ServiceId":377},
