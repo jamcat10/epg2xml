@@ -9,7 +9,6 @@ BeautifulSoup(b4), lxml 모듈이 추가로 필요하다.
 설치 OS별로 모듈을 설치하기 위한 사전 설치 방법이 다를 수도 있으므로 검색해서 설치하도록 한다.
 synology의 경우 파이썬 모듈을 설치하면  easy_install beautifulsoup, easy_install lxml 으로 추가할 수 있다.
 
-
 ## 설치방법
 
 tv_grab_file 사용시
@@ -23,8 +22,8 @@ XMLTV 사용시
 /파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock경로 또는
 /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock 경로
 </pre>
-# 설정방법
 
+## 설정방법
 Set My Configuratoin 안의 항목이 설정 가능한 항목이다. 인수로 처리하지 않고 이 부분을 수정해서 사용할 수도 있지만,
 이 부분을 직접 수정하는 것보다는 향후 업그레이드시 변경될 수 있으므로 인수로 처리하기를 권장한다.
 <pre>
@@ -40,7 +39,7 @@ Channel.json 파일을 텍스트 편집기로 열어보면 각채널별 정보�
 필요없는 채널정보를 가져오지 않게 하는 것으로 EPG 정보 수집시 시간을 단축할 수 있다.
 삭제된 채널등으로 인해서 오류 발생시에도 Enabled:0으로 변경하면 오류 발생을 차단할 수 있다.
 
-# 옵션 소개
+## 옵션 소개
 
 실행시 사용가능한 인수는 --help 명령어로 확인이 가능하다
 <pre>
