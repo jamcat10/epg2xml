@@ -10,14 +10,14 @@
 8. 알려진 버그
 
 0. 버전
- 1.0.5
+ 1.0.6
 1. 소개
  이 프로그램은 EPG(Electronic Program Guide)를 웹상의 여러 소스에서 가져와서 XML로 출력하는 프로그램으로 python2에서 사용 가능하도록 제작되었다.
 
 2. 설치전 확인 사항
  BeautifulSoup(b4), lxml 모듈이 추가로 필요하다.
  설치 OS별로 모듈을 설치하기 위한 사전 설치 방법이 다를 수도 있으므로 검색해서 설치하도록 한다.
- synology의 경우 파이썬 모듈이 설치하면  easy_install beautifulsou, easy_install lxml 이다
+ synology의 경우 파이썬 모듈을 설치하면  easy_install beautifulsou, easy_install lxml 이다
 
 3. 설치방법
  파일 압축 해제후 원하는 경로에 넣는다.
@@ -56,7 +56,10 @@
   --icon : 채널 icon 위치 URL ex) --icon http://www.example.com
 
 6. 변경사항
- - epg.co.kr의 epg 정보 못가져오는 것 수정
+ - urllib를 urllib2로 변경
+ - User Agent 추가
+ - 누락된 LG 채널 추가
+ - 채널 소스 변경
 
  7. 개선사항
   - 코드 최적화
