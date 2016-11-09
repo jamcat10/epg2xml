@@ -24,11 +24,12 @@
  파일 압축 해제후 원하는 경로에 넣는다.
  3.1 tv_grab_file 사용시
     tv_grab_file 안의 cat xmltv.xml 또는 wget 부분을
-    /파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -d 또는
-    /epg2xml.py 경로/epg2xml.py -i KG(SK, LG) -d
+    /usr/local/bin/python /home/hts/epg2xml.py -i KT(SK, LG) -d 또는
+    /home/hts/epg2xml.py -i KG(SK, LG) -d
+
  3.2 XMLTV 사용시
-    /파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock경로 또는
-    /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock 경로
+    /usr/local/bin/python /home/hts/epg2xml.py -i KT(SK, LG) -s xmltv.sock경로 또는
+    /home/hts/epg2xml.py -i KT(SK, LG) -s xmltv.sock 경로
  
  - XMLTV 사용시에는 크론에 실행할 시간을 등록해야 한다.
 
