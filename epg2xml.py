@@ -3,8 +3,7 @@
 
 import os
 import sys
-import httplib
-import urllib
+import urllib2
 import json
 import datetime
 from bs4 import BeautifulSoup, SoupStrainer
@@ -16,7 +15,7 @@ import argparse
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-__version__ = '1.0.5'
+__version__ = '1.0.6'
 
 # Set My Configuration
 default_icon_url = '' # TV channel icon url (ex : http://www.example.com/Channels)
@@ -27,6 +26,7 @@ default_xml_socket = 'xmltv.sock' # External XMLTV 사용시 기본 소켓 이�
 
 # Set date
 today = datetime.date.today()
+ua = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36', 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'accept-language': 'en-US,en;q=0.8,ko;q=0.6'}
 
 # Get epg data
 def getEpg():
@@ -35,28 +35,25 @@ def getEpg():
     SiteEPG = [] #For epg.co.kr
     with open(Channelfile) as f: # Read Channel Information file
         Channeldata = json.load(f)
-    for chinfo in Channeldata:
-        if  chinfo['Enabled'] == 1 :
-            if MyISP == 'KT' and not( chinfo['KTCh'] is None) :
-                ChannelInfos.append([chinfo['Id'], chinfo['Name'], chinfo['Source'], chinfo['ServiceId']])
-            elif MyISP == 'LG' and not( chinfo['LGCh'] is None) :
-                ChannelInfos.append([chinfo['Id'], chinfo['Name'], chinfo['Source'], chinfo['ServiceId']])
-            elif MyISP == 'SK' and not( chinfo['SKCh'] is None) :
-                ChannelInfos.append([chinfo['Id'], chinfo['Name'], chinfo['Source'], chinfo['ServiceId']])
 
-    # Print Channel information
-    for ChannelInfo in ChannelInfos:
-        ChannelId = ChannelInfo[0]
-        ChannelName =  escape(ChannelInfo[1])
-        ChannelSource =  ChannelInfo[2]
-        ChannelServiceId =  ChannelInfo[3]
-        writeXML('  <channel id="%s">' % (ChannelId))
-        writeXML('    <display-name>%s</display-name>' % (ChannelName))
-        if IconUrl:
-            writeXML('    <icon src="%s/%s.png" />' % (IconUrl, ChannelId))
-        writeXML('  </channel>')
+    for ChannelInfo in Channeldata: #Get Channel & Print Channel info
+        if ChannelInfo['Enabled'] == 1:
+            ChannelId = ChannelInfo['Id']
+            ChannelName = escape(ChannelInfo['Name'])
+            ChannelSource = ChannelInfo['Source']
+            ChannelServiceId = ChannelInfo['ServiceId']
+            ChannelNumber = ChannelInfo[MyISP+'Ch']
+            if not (ChannelInfo[MyISP+'Ch'] is None):
+                ChannelInfos.append([ChannelId,  ChannelName, ChannelSource, ChannelServiceId])
+                writeXML('  <channel id="%s">' % (ChannelId))
+                writeXML('    <display-name>%s</display-name>' % (ChannelName))
+                writeXML('    <display-name>%s</display-name>' % (ChannelNumber))
+                if IconUrl:
+                    writeXML('    <icon src="%s/%s.png" />' % (IconUrl, ChannelId))
+                writeXML('  </channel>')
 
     # Print Program Information
+# Print Program Information
     for ChannelInfo in ChannelInfos:
         ChannelId = ChannelInfo[0]
         ChannelName =  ChannelInfo[1]
@@ -86,7 +83,8 @@ def GetEPGFromEPG(ChannelInfos):
         for k in range(period):
             day = today + datetime.timedelta(days=k)
             url = 'http://schedule.epg.co.kr/php/guide/schedule_day_on.php?%snext=&old_sub_channel_group=110&old_sub_channel_group=110&old_top_channel_group=2&search_sub_category=&search_sub_channel_group=110&search_top_category=&search_top_channel_group=2&selectday=%s&selectday2=%s&weekchannel=&ymd=%s' % (churl, day, day, day)
-            u = urllib.urlopen(url).read()
+            request = urllib2.Request(url,headers=ua)
+            u = urllib2.urlopen(request).read()
             data = unicode(u, 'euc-kr', 'ignore').encode('utf-8', 'ignore')
             strainer = SoupStrainer('table', {"bgcolor" : "#D6D6D6"})
             soup = BeautifulSoup(data, 'lxml', parse_only=strainer, from_encoding='utf-8')
@@ -105,20 +103,24 @@ def GetEPGFromEPG(ChannelInfos):
                     endTime = str(today.year) + '/' + endTime
                     endTime = datetime.datetime.strptime(endTime, '%Y/%m/%d %p %I:%M')
                     endTime = endTime.strftime('%Y%m%d%H%M%S')
+                    desc = ''
                     category = epgdata[5].split('-')[0].strip()
                     actors = epgdata[6]
                     producers = epgdata[7]
+                    category = epgdata[5].split('-')[0].strip()
                     matches = re.match('^(.*?)\s*(<(.*)>)?(\(([\d,]+)회\))?$', programName)
                     if not (matches is None):
                         programName = matches.group(1) if matches.group(1) else ''
                         subprogramName = matches.group(3) if matches.group(3) else ''
                         episode = matches.group(5) if matches.group(5) else ''
+                    rebroadcast = False
                     rating = 0
                     for image in td.findAll('img'):
-                        if 'rebroadcast' in image.get('src') : programName = programName + ' (재방송)'
+                        if 'rebroadcast' in image.get('src') :
+                            programName = programName + ' (재방송)'
+                            rebroadcast = True
                         if 'grade' in image.get('src') : rating = int(image.get('src')[22:].replace('.gif',''))
-                    desc = ''
-                    programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rating':rating}
+                    programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rebroadcast':rebroadcast, 'rating':rating}
                     writeProgram(programdata)
 
 # Get EPG data from KT
@@ -129,7 +131,8 @@ def GetEPGFromKT(ChannelInfo):
     for k in range(period):
         day = today + datetime.timedelta(days=k)
         url = 'http://tv.olleh.com/renewal_sub/liveTv/pop_schedule_week.asp?ch_name=&ch_no=%s&nowdate=%s&seldate=%s&tab_no=1' % (ServiceId, day, day)
-        u = urllib.urlopen(url).read()
+        request = urllib2.Request(url,headers=ua)
+        u = urllib2.urlopen(request).read()
         data = unicode(u, 'euc-kr', 'ignore').encode('utf-8', 'ignore')
         strainer = SoupStrainer('table', {'id':'pop_day'})
         soup = BeautifulSoup(data, 'lxml', parse_only=strainer, from_encoding='utf-8')
@@ -149,15 +152,18 @@ def GetEPGFromKT(ChannelInfo):
             endTime = datetime.datetime.strptime(epg2[1], '%Y-%m-%d %H:%M')
             endTime = endTime.strftime('%Y%m%d%H%M%S')
             category = epg1[2]
-            rating = 0
-            matches = re.match('(\d+)', epg1[3])
-            if not(matches is None): rating = int(matches.group())
             desc = ''
             actors = ''
             producers = ''
             episode = ''
-            programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rating':rating}
+            rebroadcast = False
+            rating = 0
+            matches = re.match('(\d+)', epg1[3])
+            if not(matches is None): rating = int(matches.group())
+            programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rebroadcast':rebroadcast, 'rating':rating}
             writeProgram(programdata)
+
+
 # Get EPG data from LG
 def GetEPGFromLG(ChannelInfo):
     channelId = ChannelInfo[0]
@@ -166,7 +172,8 @@ def GetEPGFromLG(ChannelInfo):
     for k in range(period):
         day = today + datetime.timedelta(days=k)
         url = 'http://www.uplus.co.kr/css/chgi/chgi/RetrieveTvSchedule.hpi?chnlCd=%s&evntCmpYmd=%s' % (ServiceId, day.strftime('%Y%m%d'))
-        u = urllib.urlopen(url).read()
+        request = urllib2.Request(url,headers=ua)
+        u = urllib2.urlopen(request).read()
         data = unicode(u, 'euc-kr', 'ignore').encode('utf-8', 'ignore')
         strainer = SoupStrainer('table')
         soup = BeautifulSoup(data, 'lxml', parse_only=strainer, from_encoding='utf-8')
@@ -187,14 +194,18 @@ def GetEPGFromLG(ChannelInfo):
             endTime = datetime.datetime.strptime(epg2[1], "%Y-%m-%d %H:%M")
             endTime = endTime.strftime("%Y%m%d%H%M%S")
             category = epg1[2]
-            rating = 0
-            matches = re.match('(\d+)세이상 관람가', epg1[3].encode('utf-8'))
-            if not(matches is None): rating = int(matches.group(1))
             desc = ''
             actors = ''
             producers = ''
-            programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rating':rating}
+            category = epg1[2]
+            rebroadcast = False
+            category = epg1[2]
+            rating = 0
+            matches = re.match('(\d+)세이상 관람가', epg1[3].encode('utf-8'))
+            if not(matches is None): rating = int(matches.group(1))
+            programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rebroadcast':rebroadcast, 'rating':rating}
             writeProgram(programdata)
+
 
 # Get EPG data from SK
 def GetEPGFromSK(ChannelInfo):
@@ -202,32 +213,34 @@ def GetEPGFromSK(ChannelInfo):
     ServiceId =  ChannelInfo[3]
     lastday = today + datetime.timedelta(days=period-1)
     url = 'http://m.btvplus.co.kr/Common/Inc/IFGetData.asp?variable=IF_LIVECHART_DETAIL&pcode=|^|start_time=%s00|^|end_time=%s24|^|svc_id=%s' % (today.strftime("%Y%m%d"), lastday.strftime("%Y%m%d"), ServiceId)
-    u = urllib.urlopen(url).read()
+    request = urllib2.Request(url,headers=ua)
+    u = urllib2.urlopen(request).read()
     data = json.loads(u, encoding='utf-8')
     programs = data['channel']['programs']
     for program in programs:
         programName = ''
         subprogramName = ''
         episode = ''
-        rebroadcast = ''
+        rebroadcast = False
         matches = re.match('^(.*?)(?:\s*[\(<]([\d,회]+)[\)>])?(?:\s*<([^<]*?)>)?(\((재)\))?$', program['programName'].replace('...', '>').encode('utf-8'))
         if not (matches is None):
             programName = matches.group(1).strip() if matches.group(1) else ''
             subprogramName = matches.group(3).strip() if matches.group(3) else ''
             episode = matches.group(2).replace('회', '') if matches.group(2) else ''
-            rebroadcast = 'Y' if matches.group(5) else 'N'
-        if rebroadcast == 'Y': programName = programName + ' (재방송)'
+            rebroadcast = True if matches.group(5) else False
+        if rebroadcast == True: programName = programName + ' (재방송)'
         actors = program['actorName'].replace('...','').strip(', ') if program['actorName'] else ''
         producers = program['directorName'].replace('...','').strip(', ')  if program['directorName'] else ''
         startTime = datetime.datetime.fromtimestamp(int(program['startTime'])/1000)
         startTime = startTime.strftime('%Y%m%d%H%M%S')
         endTime = datetime.datetime.fromtimestamp(int(program['endTime'])/1000)
         endTime = endTime.strftime('%Y%m%d%H%M%S')
+        desc = program['synopsis'] if program['synopsis'] else ''
         category = program['mainGenreName']
         rating = int(program['ratingCd']) if program['programName'] else 0
         desc = ''
         if program['synopsis'] : desc = program['synopsis']
-        programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rating':rating}
+        programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rebroadcast':rebroadcast, 'rating':rating}
         writeProgram(programdata)
 
 # Get EPG data from SKY
@@ -237,30 +250,31 @@ def GetEPGFromSKY(ChannelInfo):
     for k in range(period):
         day = today + datetime.timedelta(days=k)
         url = 'http://www.skylife.co.kr/channel/epg/channelScheduleList.do?area=in&inFd_channel_id=%s&inairdate=%s&indate_type=now' % (ServiceId, day)
-        u = urllib.urlopen(url).read()
+        request = urllib2.Request(url,headers=ua)
+        u = urllib2.urlopen(request).read()
         data = json.loads(u, encoding='utf-8')
         programs = data['scheduleListIn']
         for program  in {v['starttime']:v for v in programs}.values():
             programName = unescape(program['program_name']).replace('lt;','<').replace('gt;','>').replace('amp;','&') if program['program_name'] else ''
             subprogramName = unescape(program['program_subname']).replace('lt;','<').replace('gt;','>').replace('amp;','&') if program['program_subname'] else ''
-            rebroadcast = program['rebroad']  if program['rebroad'] else ''
-            if rebroadcast == 'Y': programName = programName + ' (재방송)'
             actors = program['cast'].replace('...','').strip(', ') if program['cast'] else ''
             producers = program['dirt'].replace('...','').strip(', ') if program['dirt'] else ''
             startTime = program['starttime']
             endTime = program['endtime']
-            category = program['program_category1']
-            rating = int(program['grade']) if program['grade'] else ''
-            episode = program['episode_id'] if program['episode_id'] else ''
-            if episode : episode = int(episode)
             description = unescape(program['description']).replace('lt;','<').replace('gt;','>').replace('amp;','&') if program['description'] else ''
             if description: description = unescape(description).replace('lt;','<').replace('gt;','>').replace('amp;','&')
             summary = unescape(program['summary']).replace('lt;','<').replace('gt;','>').replace('amp;','&') if program['summary'] else ''
-            desc = ''
-            if description: desc = description
+            desc = description if description else ''
             if summary : desc = desc + '\n' + summary
-            programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rating':rating}
+            category = program['program_category1']
+            episode = program['episode_id'] if program['episode_id'] else ''
+            if episode : episode = int(episode)
+            rebroadcast = True  if program['rebroad']== 'Y' else False
+            if rebroadcast == True: programName = programName + ' (재방송)'
+            rating = int(program['grade']) if program['grade'] else 0
+            programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rebroadcast':rebroadcast, 'rating':rating}
             writeProgram(programdata)
+        
 
 # Write Program
 def writeProgram(programdata):
@@ -273,11 +287,11 @@ def writeProgram(programdata):
     producers = escape(programdata['producers'])
     category = escape(programdata['category'])
     episode = programdata['episode']
+    rebroadcast = programdata['rebroadcast']
     if programdata['rating'] == 0 :
         rating = '전체 관람가'
     else :
         rating = '%s세 이상 관람가' % (programdata['rating'])
-
     desc = programName
     if subprogramName : desc = desc + '\n부제 : ' + subprogramName
     if episode : desc = desc + '\n회차 : ' + str(episode) + '회'
@@ -286,6 +300,7 @@ def writeProgram(programdata):
     if producers : desc = desc + '\n제작 : ' + producers
     desc = desc + '\n등급 : ' + rating
     if programdata['desc'] : desc = desc + '\n' + escape(programdata['desc'])
+    rebroadcast = programdata['rebroadcast']
     contentTypeDict={'교양':'Arts / Culture (without music)', '만화':'Cartoons / Puppets', '교육':'Education / Science / Factual topics', '취미':'Leisure hobbies', '드라마':'Movie / Drama', '영화':'Movie / Drama', '음악':'Music / Ballet / Dance', '뉴스':'News / Current affairs', '다큐':'Documentary', '시사/다큐':'Documentary', '연예':'Show / Game show', '스포츠':'Sports', '홈쇼핑':'Advertisement / Shopping'}
     contentType = ''
     for key, value in contentTypeDict.iteritems():
@@ -307,14 +322,15 @@ def writeProgram(programdata):
         print '    </credits>'
     if category: print '    <category lang="kr">%s</category>' % (category)
     if contentType: print '    <category lang="en">%s</category>' % (contentType)
-    if episode:
-        print '    <episode-num system="onscreen">%s</episode-num>' % (episode)
+    if episode: print '    <episode-num system="onscreen">%s</episode-num>' % (episode)
+    if rebroadcast: print '    <previously-shown />'
+
     if rating:
         print '    <rating system="KMRB">'
         print '      <value>%s</value>' % (rating)
         print '    </rating>'
     print '  </programme>'
-# Write XML
+
 def writeXML(data):
     print data
 
