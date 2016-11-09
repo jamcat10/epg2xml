@@ -14,22 +14,26 @@ synology의 경우 파이썬 모듈을 설치하면  easy_install beautifulsoup,
 
 tv_grab_file 사용시
 tv_grab_file 안의 cat xmltv.xml 또는 wget 부분을
+<pre>
 /파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -d 또는
 /epg2xml.py 경로/epg2xml.py -i KG(SK, LG) -d
-
+</pre>
 XMLTV 사용시
+<pre>
 /파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock경로 또는
 /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock 경로
-
+</pre>
 # 설정방법
 
 Set My Configuratoin 안의 항목이 설정 가능한 항목이다. 인수로 처리하지 않고 이 부분을 수정해서 사용할 수도 있지만,
 이 부분을 직접 수정하는 것보다는 향후 업그레이드시 변경될 수 있으므로 인수로 처리하기를 권장한다.
-
+<pre>
 default_icon_url : 채널별 아이콘이 있는 url을 설정할 수 있다. 아이콘의 이름은 json 파일에 있는 Id.png로 기본설정되어 있다.
+default_verbose : EPG 정보 상세 출력
 default_fetch_limit : EPG 데이터 가져오는 기간이다.
 default_xml_filename : EPG 저장시 기본 저장 이름으로 tvheadend 서버가 쓰기가 가능한 경로로 설정해야 한다.
 default_xml_socket   : External XMLTV 사용시 xmltv.sock가 있는 경로로 설정해준다.
+</pre>
 
 Channel.json 파일을 텍스트 편집기로 열어보면 각채널별 정보가 들어 있다.
 이중 Enabled:1로 되어 있는 부분을 Enabled:0으로 바꾸면 EPG정보를 가져오지 않는다.
@@ -39,12 +43,14 @@ Channel.json 파일을 텍스트 편집기로 열어보면 각채널별 정보�
 # 옵션 소개
 
 실행시 사용가능한 인수는 --help 명령어로 확인이 가능하다
-  -h --help : 도움말 출력
-  --version : 버전을 보여준다.
-  -i : IPTV 선택 (KT, SK, LG 선택가능) ex) -i KT
-  -d --display : EPG 정보를 화면으로 보여준다.
-  -o --outfile : EPG 정보를 파일로 저장한다. ex) -o xmltv.xml
-  -s --socket  : EPG 정보를 xmltv.sock로 전송한다. ex) -s /var/run/xmltv.sock
-  -l --limit : EPG 정보 가져올 기간으로 기본값은 2일이며 최대 7일까지 설정 가능하다. ex) -l 2
-  --icon : 채널 icon 위치 URL ex) --icon http://www.example.com
-  --verobse : EPG 정보 상세하게 표기 ex) --verbose y
+<pre>
+-h --help : 도움말 출력
+--version : 버전을 보여준다.
+-i : IPTV 선택 (KT, SK, LG 선택가능) ex) -i KT
+-d --display : EPG 정보를 화면으로 보여준다.
+-o --outfile : EPG 정보를 파일로 저장한다. ex) -o xmltv.xml
+-s --socket  : EPG 정보를 xmltv.sock로 전송한다. ex) -s /var/run/xmltv.sock
+-l --limit : EPG 정보 가져올 기간으로 기본값은 2일이며 최대 7일까지 설정 가능하다. ex) -l 2
+--icon : 채널 icon 위치 URL ex) --icon http://www.example.com
+--verobse : EPG 정보 상세하게 표기 ex) --verbose y
+</pre>
