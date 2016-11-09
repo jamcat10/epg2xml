@@ -16,7 +16,7 @@ import argparse
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 
 # Set My Configuration
 default_icon_url = '' # TV channel icon url (ex : http://www.example.com/Channels)
@@ -88,7 +88,7 @@ def GetEPGFromEPG(ChannelInfos):
             url = 'http://schedule.epg.co.kr/php/guide/schedule_day_on.php?%snext=&old_sub_channel_group=110&old_sub_channel_group=110&old_top_channel_group=2&search_sub_category=&search_sub_channel_group=110&search_top_category=&search_top_channel_group=2&selectday=%s&selectday2=%s&weekchannel=&ymd=%s' % (churl, day, day, day)
             u = urllib.urlopen(url).read()
             data = unicode(u, 'euc-kr', 'ignore').encode('utf-8', 'ignore')
-            strainer = SoupStrainer('table', {"width" : "125"})
+            strainer = SoupStrainer('table', {"bgcolor" : "#D6D6D6"})
             soup = BeautifulSoup(data, 'lxml', parse_only=strainer, from_encoding='utf-8')
             html.append(soup.select('td > a[href^="JavaScript:ViewContent"]'))
             for row in html:
@@ -115,7 +115,7 @@ def GetEPGFromEPG(ChannelInfos):
                         episode = matches.group(5) if matches.group(5) else ''
                     rating = 0
                     for image in td.findAll('img'):
-                        if 'rebroadcast' in image.get('src') : programName = programName + '재방송'
+                        if 'rebroadcast' in image.get('src') : programName = programName + ' (재방송)'
                         if 'grade' in image.get('src') : rating = int(image.get('src')[22:].replace('.gif',''))
                     desc = ''
                     programdata = {'channelId':channelId, 'startTime':startTime, 'endTime':endTime, 'programName':programName, 'subprogramName':subprogramName, 'desc':desc, 'actors':actors, 'producers':producers, 'category':category, 'episode':episode, 'rating':rating}
