@@ -49,17 +49,8 @@
   --icon : 채널 icon 위치 URL ex) --icon http://www.example.com
 
 6. 변경사항
- - ISP별 분리된 채널통합
- - 개별 채널별 EPG 정보 수집가능하도록 Enabled 추가
- - getMyChannel 함수 삭제
- - 채널명 변경
- - LG Discovery HD 채널 추가
- - SK 드라마H, CMC가족오락TV, Celestial Movies, UXN,UHD Dream TV,UMAX,ASiA UHD 채널 추가
- - KT TRU TV 채널 삭제
- - ISP 선택 설정 추가
- - EPG 정보 가져오는 기간 설정 추가
- - 채널 아이콘 설정 URL 설정 추가
- - tvheadend 전용 카테고리 추가
+ - Channel.json 파일 오류 수정 
+ - LG를 소스로 하는 EPG 정보 기간 오류 수정
 
  7. 개선사항
   - 코드 최적화

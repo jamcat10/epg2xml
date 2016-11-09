@@ -17,7 +17,7 @@ import argparse
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 # Set My Configuration
 default_icon_url = '' # TV channel icon url (ex : http://www.example.com/Channels)
@@ -177,7 +177,7 @@ def GetEPGFromLG(ChannelInfo):
         u = urllib.urlopen(url).read()
         data = unicode(u, 'euc-kr', 'ignore').encode('utf-8', 'ignore')
         soup = BeautifulSoup(data,'lxml', from_encoding='utf-8')
-        html = soup.find('table', {'class':'datatable06'}).tbody.findAll('tr')
+        html = soup.find('table', {'class':'datatable06'}).tbody.findAll('tr') if soup.find('table', {'class':'datatable06'}) else ''
         for row in html:
             for cell in [row.findAll('td')]:
                 epginfo.append([cell[1].text.strip(), str(day) + ' ' + cell[0].text, cell[2].text.strip(), cell[1].find('img', alt=True)['alt'].strip()])
