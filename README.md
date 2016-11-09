@@ -5,9 +5,9 @@
 
 ## 필요 모듈
 
-BeautifulSoup(b4), lxml 모듈이 추가로 필요하다.
+BeautifulSoup(b4), lxml, requests 모듈이 추가로 필요하다.
 설치 OS별로 모듈을 설치하기 위한 사전 설치 방법이 다를 수도 있으므로 검색해서 설치하도록 한다.
-synology의 경우 파이썬 모듈을 설치하면  easy_install beautifulsoup, easy_install lxml 으로 추가할 수 있다.
+synology의 경우 파이썬 모듈을 설치하면 easy_install beautifulsoup, easy_install lxml, easy_install requests 로 추가할 수 있다.
 
 ## 설치방법
 
