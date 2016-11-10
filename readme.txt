@@ -10,7 +10,7 @@
 8. 알려진 버그
 
 0. 버전
- 1.0.7
+ 1.0.8
 1. 소개
  이 프로그램은 EPG(Electronic Program Guide)를 웹상의 여러 소스에서 가져와서 XML로 출력하는 프로그램으로 python2에서 사용 가능하도록 제작되었다.
  기본적으로 외부의 소스를 분석하여 출력하므로 외부 소스 사이트가 변경되거나 삭제되면 문제가 발생할 수 있다.
@@ -18,18 +18,17 @@
 2. 설치전 확인 사항
  BeautifulSoup(b4), lxml 모듈이 추가로 필요하다.
  설치 OS별로 모듈을 설치하기 위한 사전 설치 방법이 다를 수도 있으므로 검색해서 설치하도록 한다.
- synology의 경우 파이썬 모듈을 설치하면  easy_install beautifulsou, easy_install lxml 이다
+ synology의 경우 파이썬 모듈을 설치하면  easy_install beautifulsoup, easy_install lxml 이다
 
 3. 설치방법
  파일 압축 해제후 원하는 경로에 넣는다.
  3.1 tv_grab_file 사용시
     tv_grab_file 안의 cat xmltv.xml 또는 wget 부분을
-    /usr/local/bin/python /home/hts/epg2xml.py -i KT(SK, LG) -d 또는
-    /home/hts/epg2xml.py -i KG(SK, LG) -d
-
+    /파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -d 또는
+    /epg2xml.py 경로/epg2xml.py -i KG(SK, LG) -d
  3.2 XMLTV 사용시
-    /usr/local/bin/python /home/hts/epg2xml.py -i KT(SK, LG) -s xmltv.sock경로 또는
-    /home/hts/epg2xml.py -i KT(SK, LG) -s xmltv.sock 경로
+    /파이썬설치경로/python /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock경로 또는
+    /epg2xml.py 경로/epg2xml.py -i KT(SK, LG) -s xmltv.sock 경로
  
  - XMLTV 사용시에는 크론에 실행할 시간을 등록해야 한다.
 
@@ -60,12 +59,10 @@
   --verobse : EPG 정보 상세하게 표기 ex) --verbose y
 
 6. 변경사항
- - urllib2를 requests로 변경
- - User Agent 변경
- - 오류 처리 추가
+ - 몇몇 소스 정지 시간 추가
+ - 오류 출력 구문 디버그시만 출력으로 변경
  - 없어진 채널 삭제
- - 채널 소스 변경
- - 지역 지상파 채널 추가(기본적으로 Disabled 되어 있음)
+ - 지역 지상파 채널 소스 변경
 
  7. 개선사항
   - 코드 최적화
@@ -74,4 +71,4 @@
   - 채널 json 편집기 추가
 
 8. 알려진 버그
-  - KT, LG, Naver를 소스로 하는 채널의 EPG정보는 가져오는 기간의 제일 마지막 방송정보를 표시하지 않음
+  - KT, LG, Naver, epg.co.kr을 소스로 하는 채널의 EPG정보는 가져오는 기간의 제일 마지막 방송정보를 표시하지 않음
