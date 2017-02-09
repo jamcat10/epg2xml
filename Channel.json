@@ -163,7 +163,7 @@
 {"Id":194,"KTCh":267,"SKCh":null,"LGCh":null,"Name":"STN","Source":"EPG","ServiceId":628,"Enabled":1},
 {"Id":195,"KTCh":105,"SKCh":40,"LGCh":43,"Name":"선댄스 채널","Source":"SK","ServiceId":776,"Enabled":1},
 {"Id":196,"KTCh":32,"SKCh":36,"LGCh":40,"Name":"슈퍼액션","Source":"SK","ServiceId":179,"Enabled":1},
-{"Id":197,"KTCh":94,"SKCh":null,"LGCh":null,"Name":"tag TV","Source":"EPG","ServiceId":663,"Enabled":1},
+{"Id":197,"KTCh":94,"SKCh":null,"LGCh":null,"Name":"tag TV","Source":"KT","ServiceId":94,"Enabled":1},
 {"Id":198,"KTCh":214,"SKCh":416,"LGCh":176,"Name":"tbsTV","Source":"SK","ServiceId":420,"Enabled":1},
 {"Id":199,"KTCh":114,"SKCh":97,"LGCh":81,"Name":"텔레노벨라","Source":"SK","ServiceId":173,"Enabled":1},
 {"Id":200,"KTCh":55,"SKCh":66,"LGCh":55,"Name":"The Golf Channel","Source":"SK","ServiceId":135,"Enabled":1},
