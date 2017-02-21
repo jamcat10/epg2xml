@@ -530,7 +530,7 @@ elif args.socket:
         sock.connect(args.socket)
         sockfile = sock.makefile('w+')
         sys.stdout = sockfile
-    except socket.error
+    except socket.error:
         printError("xmltv.sock 파일을 찾을 수 없습니다.")
         sys.exit()
 
