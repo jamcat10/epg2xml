@@ -16,7 +16,7 @@ import argparse
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-__version__ = '1.0.8'
+__version__ = '1.0.9'
 
 # Set My Configuration
 default_icon_url = '' # TV channel icon url (ex : http://www.example.com/Channels)
@@ -525,10 +525,14 @@ else:
 if args.outfile:
     sys.stdout = codecs.open(args.outfile, 'w+', encoding='utf-8')
 elif args.socket:
-    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    sock.connect(args.socket)
-    sockfile = sock.makefile('w+')
-    sys.stdout = sockfile
-
+    try:
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.connect(args.socket)
+        sockfile = sock.makefile('w+')
+        sys.stdout = sockfile
+    except socket.error
+        printError("xmltv.sock 파일을 찾을 수 없습니다.")
+        sys.exit()
+        
 getEpg()
 
